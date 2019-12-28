@@ -10,6 +10,6 @@ Organization: Fedora Project
 
 <a href="https://thingspeak.com/channels/947635/">ThingSpeak Channel</a>
 
-<br />
+
 
 <a href="https://easyeda.com/prosenjit.pollob/thingspeak-with-dht-nodemcu">Schematic Circuit Diagram</a>

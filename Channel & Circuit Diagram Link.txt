@@ -1,3 +1,0 @@
-ThingSpeak Channel link: https://thingspeak.com/channels/947635/
-
-Schematic Circuit Diagram Link: https://easyeda.com/prosenjit.pollob/thingspeak-with-dht-nodemcu 

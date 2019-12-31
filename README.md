@@ -6,7 +6,5 @@ Google Code-in 2019
 <br />
 Organization: Fedora Project
 
-<br />
-
 <a href="https://thingspeak.com/channels/947635/">ThingSpeak Channel</a>
 

@@ -1,5 +1,5 @@
 # Weather-Station
-A Project of Google Code-in 2019 for Fedora Project.
+A Project of Google Code-in 2019 for <i>Fedora Project</i>
 <br />
 <br />
 Google Code-in 2019

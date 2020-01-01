@@ -8,7 +8,8 @@
  * ||3.Breadboard;                              ||
  * ||4.Some Jumper Wires;                       ||              
  * ||5.LED/Buzzer;                              ||
- * ||6. Resistor(between 100 ohm to 200 ohm);   ||
+ * ||6. Resistor(between 100 ohm to 200 ohm);   || 
+ * ||                                           ||
  * |||||||||||||||||||||||||||||||||||||||||||||||
  *    
  * 

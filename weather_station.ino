@@ -19,7 +19,10 @@
  * ||                                              ||
  * ||DHT(+)                  =           VIN;      ||
  * ||DHT(-)                  =           GND;      ||
- * ||DHT(DATA)               =           D0;       ||      
+ * ||DHT(DATA)               =           D0;       ||
+ * ||                                              ||
+ * ||Others;                                       ||
+ * ||                                              ||
  * ||LED(+)/Buzzer(+)        =           D4;       ||
  * ||LED(-)/Buzzer(-)        =           GND;      ||
  * ||Use Resistor for Restrain overload current;   ||                                 

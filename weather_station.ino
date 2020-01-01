@@ -6,20 +6,24 @@
  * ||1.ESP8266(NODEMCU)                        ||
  * ||2.Temperature & Humidity Sensors(DHT11)   ||
  * ||3.Breadboard                              ||
- * ||4.Some Jumper Wires                       ||
+ * ||4.Some Jumper Wires                       ||              
+ * ||5.LED/Buzzer                              ||
  * ||                                          ||
  * ||||||||||||||||||||||||||||||||||||||||||||||
  *    
  * 
- * ||||||||||||||||Pinout|||||||||||||||||||
- * ||                                     ||
- * ||DHT           TO         NODEMCU     ||
- * ||                                     ||
- * ||DHT(+)        =           VIN;       ||
- * ||DHT(-)        =           GND;       ||
- * ||DHT(DATA)     =           D0;        ||
- * ||                                     ||
- * |||||||||||||||||||||||||||||||||||||||||
+ * |||||||||||||||||||||||Pinout|||||||||||||||||||||
+ * ||                                              ||
+ * ||DHT                     TO         NODEMCU    ||
+ * ||                                              ||
+ * ||DHT(+)                  =           VIN;      ||
+ * ||DHT(-)                  =           GND;      ||
+ * ||DHT(DATA)               =           D0;       ||      
+ * ||LED(+)/Buzzer(+)        =           D4;       ||
+ * ||LED(-)/Buzzer(-)        =           GND;      ||
+ * ||Resistor between 100 ohm to 200 ohm;          ||                                 
+ * ||                                              ||
+ * ||||||||||||||||||||||||||||||||||||||||||||||||||
  * 
  * 
  * 
@@ -28,9 +32,9 @@
  * 
  * Thingspeak channel link: https://thingspeak.com/channels/947635/
  *
- *
- * Schematic Circuit Diagram Link: https://easyeda.com/prosenjit.pollob/thingspeak-with-dht-nodemcu 
  * 
+ *N.B: If DHT11 corrupt then LED light/Buzzer will turn on.
+ *
  *
  */
 
@@ -55,9 +59,11 @@ int myChannelNo = 0; //Declear Just a number You can place any digit
 
 SimpleDHT11 dht(D0);//decleared a variable for DHT and connect to D0 pin of nodemcu to DHT data pin
 
-float totalTime,totalAttempt,totalTemperature,totalHumidity,averageTemperature,averageHumidity;  //For Calculation
+int cautionLight = D4; //decleared a variable for cautionLight and connect to D4 pin of nodemcu to LED(+)
 
-int Time = 2000;                                                                               //For Calculation and time value is 2 second
+float totalAttempt,totalTemperature,totalHumidity,averageTemperature,averageHumidity;  //For Calculation
+
+int totalTime, Time = 2000, avoidTime = 1000,totalAvoidTime = 0 ;                    //For Calculation and time value is 2 second
 
 
 void setup() {
@@ -74,11 +80,11 @@ void setup() {
   
   Serial.println("WiFi is Connecting.....");    //Print WiFi Status at Serial Monitor
  
-  delay(8000);                                 //Waitng For Connecting
+  delay(8000);                                //Waitng For Connecting
  
   while (WiFi.status() != WL_CONNECTED) {
   
-    Serial.println("WiFi NOT CONNECTED");    //Print WiFi Status at Serial Monitor(Confarmation Messege)
+    Serial.println("WiFi NOT CONNECTED"); //Print WiFi Status at Serial Monitor(Confarmation Messege)
     Serial.println();
 
     delay(500);
@@ -100,6 +106,11 @@ void setup() {
 
   ThingSpeak.begin(client);      //Connecting To ThingSpeak Server
 
+  pinMode(cautionLight,OUTPUT); //Declear the pin for cautionLight
+
+  digitalWrite(cautionLight,HIGH); // Testing (Light On) 
+  delay(500);
+  digitalWrite(cautionLight,LOW);// Testing (Light off) 
   delay(500);
 
   Serial.println();
@@ -133,8 +144,13 @@ void loop() {
   delay(2000);
   
   int error = SimpleDHTErrSuccess; //Decleared a variable for DHT error message
+
+  digitalWrite(cautionLight,LOW);                                               //If DHT11 work properly then cautionLight off
     
   if ((error = dht.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+
+    digitalWrite(cautionLight,HIGH);                                                //cautionLight on
+    
     delay(500);
     Serial.println("DHT11 can't read,Check your DHT11 Sensor or Change this. :)");//Print DHT11 Sensor Status at Serial Monitor(Confarmation Messege)
     delay(500);
@@ -161,10 +177,21 @@ void loop() {
 
   else{
     
-    for(totalTime = 0,totalAttempt = 0,totalTemperature = 0,totalHumidity = 0,averageTemperature = 0,averageHumidity = 0;  ;  ){
+    for(totalTime = 0,totalAttempt = 0,totalAvoidTime = 0, totalTemperature = 0,totalHumidity = 0,averageTemperature = 0,averageHumidity = 0;  ;  ){
+
       
-      if ((error = dht.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) // Avoiding send Wrong Sensor Data
+      if ((error = dht.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess){   // Avoiding send Wrong Sensor Data
+        
+        Serial.println("Please Check Your DHT11 Sensor Connection or change it :)"); //If DHT11 Doesn't response then the instruction print at Serial Monitor 
+        digitalWrite(cautionLight,HIGH);                                            //cautionLight on
+        delay(avoidTime);
+        
+        totalAvoidTime = totalAvoidTime + avoidTime;                             //Calculating total time of avoiding send Wrong Sensor Data
+        
         continue;
+      }
+
+      digitalWrite(cautionLight,LOW);                                               //If DHT11 work properly then cautionLight off
 
       totalTemperature = totalTemperature + temperature;                          //Storing Total Temperature value
       
@@ -172,9 +199,13 @@ void loop() {
 
       totalAttempt++;                                                         //Storing Total attempt
 
+      Serial.println(".");
+
       delay(Time);                                                          //Delay 2 Second
 
-      totalTime = totalTime + Time;                                       //Storing Total Total
+      totalTime = totalTime + Time + totalAvoidTime;                      //Storing Total Total
+
+      totalAvoidTime = 0;                                                //Calculation 
       
       if(totalTime>=3539000){
         
@@ -184,7 +215,7 @@ void loop() {
         delay(1000);
         Serial.print(averageTemperature);                          //Print average temperature value at Serial Monitor
         delay(1000);
-        Serial.println(" C");
+        Serial.println(" ^C");
 
         averageHumidity = totalHumidity/totalAttempt;          // Calculating average humidity value
         delay(1000);

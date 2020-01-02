@@ -36,8 +36,9 @@
  * 
  * Thingspeak channel link: https://thingspeak.com/channels/947635/
  *
+ * Schematic Circuit Diagram: https://easyeda.com/prosenjit.pollob/Weather-Station-using-Nodemcu-and-ThingSpeak-Server
  * 
- *N.B: If DHT11 corrupt then LED light/Buzzer will turn on.
+ * N.B: If DHT11 corrupt then LED light/Buzzer will turn on.
  *
  *
  */
